@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:message_encryption_decryption/dashboard.dart';
 import 'package:message_encryption_decryption/signin.dart';
 import 'package:message_encryption_decryption/utils/authentication.dart';
-
-import 'dashboard.dart';
-
 
 class SignUp extends StatefulWidget {
   @override
@@ -65,7 +63,7 @@ class _SignUpState extends State<SignUp> {
                         size: 30,
                       ),
                       suffixIcon: IconButton(
-                          icon: Icon(Icons.remove_red_eye),
+                          icon: key==false ? Icon(Icons.remove_red_eye) : Icon(Icons.visibility_off),
                           onPressed: (){
                             key==false ? setState(() {key=true;_color=null;}) : setState(() {key=false;_color=Colors.red;});
                           }
@@ -110,7 +108,7 @@ class _SignUpState extends State<SignUp> {
                 Container(
                   margin: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.05, left: MediaQuery.of(context).size.width*0.1, right:  MediaQuery.of(context).size.width*0.1),
                   child: CupertinoButton(
-                      //splashColor: Colors.blueAccent,
+                    //splashColor: Colors.blueAccent,
                       padding: EdgeInsets.all(10.0),
                       color: Colors.pink[400],
                       child: Center(
@@ -131,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                             _phoneController.text = '';
                             _passwordController.text = '';
                           });
-                           return Navigator.of(context).push(MaterialPageRoute(builder: (context) => DashBoard(uid: result,)));
+                          return Navigator.of(context).push(MaterialPageRoute(builder: (context) => DashBoard(uid: result,)));
 
                         }).catchError((error) {
                           print('Registration Error: $error');

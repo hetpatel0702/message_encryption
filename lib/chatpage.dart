@@ -76,14 +76,6 @@ class _ChatPageState extends State<ChatPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Message is empty!!!'),
-          // content: SingleChildScrollView(
-          //   child: ListBody(
-          //     children: <Widget>[
-          //       Text('This is a demo alert dialog.'),
-          //       Text('Would you like to approve of this message?'),
-          //     ],
-          //   ),
-          // ),
           actions: <Widget>[
             RaisedButton(
               child: Text('ok'),
@@ -102,8 +94,21 @@ class _ChatPageState extends State<ChatPage> {
       _showMyDialog();
     }
     if(_message.text.length > 0) {
+      String msg1='';
+      String msg2='';
+      String msg3='';
+      for(int i=0;i<_message.text.length;i++){
+        if(i%3==0)
+          msg1 += _message.text[i];
+        else if(i%3==1)
+          msg2 += _message.text[i];
+        else
+          msg3 += _message.text[i];
+      }
+      final String finalMsg = msg1+'~'+msg2+'~'+msg3;
+
       await _firestore.collection('messages').doc(widget.senderUid).collection(widget.receiverUid).add({
-        'Message': _message.text,
+        'Message': finalMsg,
         'sender id': widget.senderUid,
         'receiver id': widget.receiverUid,
         'receiver name': widget.receiverName,
@@ -111,7 +116,7 @@ class _ChatPageState extends State<ChatPage> {
         'message length': '${_message.text.length}'
       });
       await _firestore.collection('messages').doc(widget.receiverUid).collection(widget.senderUid).add({
-        'Message': _message.text,
+        'Message': finalMsg,
         'sender id': widget.senderUid,
         'receiver id': widget.receiverUid,
         'receiver name': widget.receiverName,
@@ -137,15 +142,13 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return check() ? Scaffold(
-        appBar: AppBar(
-          title: Text("Receiver: "+ widget.receiverName),
-          centerTitle: true,
-        ),
+      appBar: AppBar(
+        title: Text("Receiver: "+ widget.receiverName),
+        centerTitle: true,
+      ),
       body: Center(
         child: Column(
           children: [
-            // Text("Sender Id: "+ widget.senderUid),
-            // Text("Receiver Id: "+ widget.receiverUid),
 
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
@@ -181,7 +184,6 @@ class _ChatPageState extends State<ChatPage> {
                   hintText: "Enter Message...",
                   suffixIcon: IconButton(
                       icon: Icon(Icons.send),
-
                       onPressed: _sendMsg
                   ),
                   fillColor: Colors.white,
@@ -196,12 +198,54 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-class Message extends StatelessWidget {
-
+class Message extends StatefulWidget {
   final String text;
   final bool me;
 
   const Message({Key key, this.text, this.me}) : super(key: key);
+  @override
+  _MessageState createState() => _MessageState(text: text, me: me);
+}
+
+class _MessageState extends State<Message> {
+  final String text;
+  final bool me;
+
+  _MessageState({this.text, this.me});
+
+  String _decry(String cipher){
+    String msg1='';
+    String msg2='';
+    String msg3='';
+    String plainText='';
+    int f=0,k1=0,k2=0,k3=0;
+    for(int i=0;i<cipher.length;i++){
+      if(cipher[i]=='~' && f==1){
+        f=2;
+        continue;
+      }
+      if(cipher[i]=='~'){
+        f=1;
+        continue;
+      }
+
+      if(f==0)
+        msg1+=cipher[i];
+      else if(f==1)
+        msg2+=cipher[i];
+      else if(f==2)
+        msg3+=cipher[i];
+    }
+    for(int i=0;i<cipher.length-2;i++){
+      if(i%3==0)
+        plainText+=msg1[k1++];
+      else if(i%3==1)
+        plainText+=msg2[k2++];
+      else if(i%3==2)
+        plainText+=msg3[k3++];
+    }
+    return plainText;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +264,7 @@ class Message extends StatelessWidget {
                 padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.028),
                 child: Column(
                   children: <Widget>[
-                    Text(text, style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.055, color: Colors.white,),),
+                    Text(_decry(text), style: TextStyle(fontSize: MediaQuery.of(context).size.width*0.055, color: Colors.white,),),
                   ],
                 ),
               ),

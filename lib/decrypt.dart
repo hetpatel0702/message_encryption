@@ -17,6 +17,40 @@ class _DecryptMsgState extends State<DecryptMsg> {
     _msg = '';
   }
 
+  String _decry(String cipher){
+    String msg1='';
+    String msg2='';
+    String msg3='';
+    String plainText='';
+    int f=0,k1=0,k2=0,k3=0;
+    for(int i=0;i<cipher.length;i++){
+      if(cipher[i]=='~' && f==1){
+        f=2;
+        continue;
+      }
+      if(cipher[i]=='~'){
+        f=1;
+        continue;
+      }
+
+      if(f==0)
+        msg1+=cipher[i];
+      else if(f==1)
+        msg2+=cipher[i];
+      else if(f==2)
+        msg3+=cipher[i];
+    }
+    for(int i=0;i<cipher.length-2;i++){
+      if(i%3==0)
+        plainText+=msg1[k1++];
+      else if(i%3==1)
+        plainText+=msg2[k2++];
+      else if(i%3==2)
+        plainText+=msg3[k3++];
+    }
+    return plainText;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,14 +84,16 @@ class _DecryptMsgState extends State<DecryptMsg> {
                   color: Colors.blueGrey,
                   child: Center(child: Text("Decrypt", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 2.0),)),
                   onPressed: (){
-
+                    setState(() {
+                      _msg = _decry(_msgController.text);
+                    });
                   }
-                  ),
+              ),
             ),
             Container(
               alignment: Alignment.center,
               margin: EdgeInsets.only(top: 25),
-              child: Text("Hello !! Hii ! How are U??", style: TextStyle(fontSize: 40.0 ,color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, letterSpacing: 1.0),),
+              child: Text(_msg, style: TextStyle(fontSize: 40.0 ,color: Colors.deepPurpleAccent, fontWeight: FontWeight.bold, letterSpacing: 1.0),),
             )
           ],
         ),

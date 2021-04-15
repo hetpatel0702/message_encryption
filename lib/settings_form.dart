@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:message_encryption_decryption/utils/database.dart';
 import 'package:message_encryption_decryption/utils/user.dart';
 
-
 class SettingsForm extends StatefulWidget {
 
   final String uid;
@@ -56,7 +55,8 @@ class _SettingsState extends State<SettingsForm> {
 
             return Scaffold(
               appBar: AppBar(
-                title: Text("Settings:"),
+                title: Text("Settings"),
+                centerTitle: true,
                 leading: IconButton(
                     icon: Icon(Icons.arrow_back),
                     onPressed: (){
@@ -142,7 +142,7 @@ class _SettingsState extends State<SettingsForm> {
                                 size: 30,
                               ),
                               suffixIcon: IconButton(
-                                  icon: Icon(Icons.remove_red_eye),
+                                  icon: key==false ? Icon(Icons.remove_red_eye) : Icon(Icons.visibility_off),
                                   onPressed: (){
                                     key==false ?
                                     setState(() {
